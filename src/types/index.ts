@@ -4,6 +4,7 @@ export interface AxiosRequestConfig {
   data?: any
   // 这个是将来要拼到query string中的
   params?: any
+  headers?: any
 }
 
 // 定义一些可能出现的方法
