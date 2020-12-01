@@ -1,4 +1,4 @@
-import { AxiosRequestConfig } from './types/index'
+import { AxiosRequestConfig, AxiosPromise } from './types/index'
 import xhr from './xhr'
 import { buildURL } from './utils/url'
 import { isPlainObject } from './utils/common'
@@ -7,11 +7,11 @@ import { processHeaders } from './utils/headers'
 
 // axios做一些参数处理和请求转发的工作
 // 具体逻辑在xhr中完成,xhr主要就是完成请求的发送和接收
-export function axios(config: AxiosRequestConfig) {
+export function axios(config: AxiosRequestConfig): AxiosPromise {
   // 处理config中的数据,将config整个传入
   processConfig(config)
   // 转发请求给xhr函数
-  xhr(config)
+  return xhr(config)
 }
 
 function processConfig(config: AxiosRequestConfig) {

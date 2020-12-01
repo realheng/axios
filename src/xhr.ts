@@ -1,17 +1,43 @@
-import { AxiosRequestConfig } from './types/index'
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types/index'
 
-export default function xhr(config: AxiosRequestConfig): void {
-  const { data = null, url, method = 'get', headers } = config
-  const request = new XMLHttpRequest()
-  request.open(method.toUpperCase(), url, true)
-
-  Object.keys(headers).forEach(name => {
-    if (data == null && name.toLowerCase() === 'content-type') {
-      delete headers[name]
-    } else {
-      request.setRequestHeader(name, headers[name])
+export default function xhr(config: AxiosRequestConfig): AxiosPromise {
+  return new Promise((resolve, reject) => {
+    const { data = null, url, method = 'get', headers, responseType } = config
+    const request = new XMLHttpRequest()
+    if (responseType) {
+      request.responseType = responseType
     }
-  })
+    request.open(method.toUpperCase(), url, true)
 
-  request.send(data)
+    request.onreadystatechange = function handleLoad() {
+      if (request.readyState !== 4) {
+        return
+      }
+
+      const responseHeaders = request.getAllResponseHeaders()
+      const repsonseData =
+        responseType && responseType !== 'text' ? request.response : request.responseText
+
+      const response: AxiosResponse = {
+        data: repsonseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config,
+        request
+      }
+
+      resolve(response)
+    }
+
+    Object.keys(headers).forEach(name => {
+      if (data == null && name.toLowerCase() === 'content-type') {
+        delete headers[name]
+      } else {
+        request.setRequestHeader(name, headers[name])
+      }
+    })
+
+    request.send(data)
+  })
 }
