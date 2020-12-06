@@ -1,8 +1,38 @@
-import { AxiosRequestConfig, AxiosPromise, Method } from './../types/index'
+import {
+  AxiosRequestConfig,
+  AxiosPromise,
+  Method,
+  AxiosResponse,
+  ResolvedFn,
+  RejectedFn
+} from './../types'
 import dispatchRequest from './dispatchRequest'
+import InterceptorManager from './interceptorManager'
+
+export interface Interceptors {
+  request: InterceptorManager<AxiosRequestConfig>
+  response: InterceptorManager<AxiosResponse>
+}
+
+interface PromiseChain {
+  resolved: ResolvedFn | ((config: AxiosRequestConfig) => AxiosPromise)
+  rejected?: RejectedFn
+}
 
 // Axios是一个代理,扩展了一些好用的方法,但实际上还是调用的dispatchRequest,即之前的axios
 export default class Axios {
+  interceptors: Interceptors
+
+  constructor() {
+    // 初始化的时候生成拦截器对
+    // 一个是request,一个是response
+    this.interceptors = {
+      request: new InterceptorManager<AxiosRequestConfig>(),
+      response: new InterceptorManager<AxiosResponse>()
+    }
+  }
+
+  // 无论是用函数的形式还是面向对象的形式发起请求,最终请求的config都会经过request方法处理
   request(url: any, config?: AxiosRequestConfig) {
     if (typeof url === 'string') {
       if (!config) {
@@ -12,8 +42,29 @@ export default class Axios {
     } else {
       config = url
     }
-    // 无论request的参数个数是几个,使用的时候都是用一个config
-    return dispatchRequest(config)
+
+    const chain: PromiseChain[] = [
+      {
+        // 使用拦截器之后所有config都会经过拦截器的处理,而不是像之前那样直接return dispatch(config)
+        resolved: dispatchRequest,
+        rejected: undefined
+      }
+    ]
+
+    this.interceptors.request.forEach(interceptor => {
+      // 请求拦截器是先进后出
+      chain.unshift(interceptor)
+    })
+
+    this.interceptors.response.forEach(interceptor => {
+      chain.push(interceptor)
+    })
+
+    const promise = Promise.resolve(config)
+
+    return chain.reduce((result, interceptor) => {
+      return result.then(interceptor.resolved, interceptor.rejected)
+    }, promise)
   }
 
   get(url: string, config?: AxiosRequestConfig) {

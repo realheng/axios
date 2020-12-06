@@ -99,6 +99,14 @@ router.get('/extend/user', function (req, res) {
   })
 })
 
+router.post('/config/post', function (req, res) {
+  res.json(req.body)
+})
+
+router.get('/interceptor/get', function (req, res) {
+  res.end('hello')
+})
+
 app.use(webpackHotMiddleware(compiler))
 app.use(express.static(__dirname))
 
