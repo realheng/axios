@@ -12,3 +12,8 @@
    2.  拦截器管理器用来管理若干拦截器,它可以注册 删除 遍历拦截器对象
    3.  axios实例上面有一个interceptors属性,它是由request和response组成的对象,request是一个拦截器管理器,用来管理请求拦截器.response用来管理响应拦截器
    4.  dispatchRequest也是一个拦截器
+10. 合并配置
+    1.  添加默认配置用来和传入的配置进行合并
+    2.  
+   
+

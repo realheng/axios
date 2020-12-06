@@ -1,4 +1,5 @@
-import { isPlainObject } from './common'
+import { isPlainObject, deepMerge } from './common'
+import { Method } from '../types'
 
 // 将不符合规范的header name修改为标准的header name
 function normalizeHeaderName(headers: any, normalizedName: string) {
@@ -47,4 +48,18 @@ export function parseHeaders(headers: string) {
   })
 
   return parsed
+}
+
+export function flattenHeaders(headers: any, method: Method): any {
+  if (!headers) return headers
+
+  headers = deepMerge(headers.common || {}, headers[method] || {}, headers)
+
+  const methodsToDelete = ['delete', 'get', 'head', 'options', 'post', 'put', 'patch', 'common']
+
+  methodsToDelete.forEach(method => {
+    delete headers[method]
+  })
+
+  return headers
 }

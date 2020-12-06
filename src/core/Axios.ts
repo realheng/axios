@@ -22,8 +22,9 @@ interface PromiseChain {
 // Axios是一个代理,扩展了一些好用的方法,但实际上还是调用的dispatchRequest,即之前的axios
 export default class Axios {
   interceptors: Interceptors
-
-  constructor() {
+  defaults: AxiosRequestConfig
+  constructor(initialConfig: AxiosRequestConfig) {
+    this.defaults = initialConfig
     // 初始化的时候生成拦截器对
     // 一个是request,一个是response
     this.interceptors = {
