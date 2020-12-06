@@ -8,3 +8,7 @@
 7. 响应数据泛型可以让ts推断出数据类型,可以让我们更加方便的得知数据的类型然后做处理
 8. 添加拦截器可以让用户在请求发送前和接收到响应之后对config和response做一些逻辑操作,拦截器有点类似express和koa里面的中间件
 9. 拦截器的顺序是request拦截器先进后出,response拦截器先进先出
+   1.  拦截器本质上就是拥有resolved和rejected方法对的对象,类似于promise的then方法注册的两个回调函数
+   2.  拦截器管理器用来管理若干拦截器,它可以注册 删除 遍历拦截器对象
+   3.  axios实例上面有一个interceptors属性,它是由request和response组成的对象,request是一个拦截器管理器,用来管理请求拦截器.response用来管理响应拦截器
+   4.  dispatchRequest也是一个拦截器
