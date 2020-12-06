@@ -3,7 +3,16 @@ import dispatchRequest from './dispatchRequest'
 
 // Axios是一个代理,扩展了一些好用的方法,但实际上还是调用的dispatchRequest,即之前的axios
 export default class Axios {
-  request(config: AxiosRequestConfig) {
+  request(url: any, config?: AxiosRequestConfig) {
+    if (typeof url === 'string') {
+      if (!config) {
+        config = {}
+      }
+      config.url = url
+    } else {
+      config = url
+    }
+    // 无论request的参数个数是几个,使用的时候都是用一个config
     return dispatchRequest(config)
   }
 
