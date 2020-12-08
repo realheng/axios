@@ -30,6 +30,7 @@ export interface AxiosRequestConfig {
   // 对响应返回的data做处理
   transformResponse?: AxiosTransformer | AxiosTransformer[]
   cancelToken?: CancelToken
+  withCredentials?: boolean
 }
 
 export interface AxiosTransformer {

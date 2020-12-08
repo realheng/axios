@@ -87,7 +87,6 @@ export default class Axios {
   }
 
   post(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
-    console.log('post', data)
     return this._requestMethodWithData('post', url, data, config)
   }
 
