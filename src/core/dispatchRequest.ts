@@ -8,6 +8,8 @@ import transform from './transform'
 // dispatchRequest做一些参数处理和请求转发的工作
 // 具体逻辑在xhr中完成,xhr主要就是完成请求的发送和接收
 export function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
+  // 判断请求是否已经被取消了,如果取消了
+  throwIfCancellationRequested(config)
   // 处理config中的数据,将config整个传入
   processConfig(config)
   // 转发请求给xhr函数
@@ -31,6 +33,12 @@ function transformURL(config: AxiosRequestConfig) {
 function transformResponseData(res: AxiosResponse) {
   res.data = transformResponse(res.data)
   return res
+}
+
+function throwIfCancellationRequested(config: AxiosRequestConfig) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested()
+  }
 }
 
 export default dispatchRequest

@@ -15,7 +15,13 @@ export default function mergeConfig(
 
   for (const key in customConfig) {
     if (customConfig.hasOwnProperty(key)) {
-      const element = customConfig[key]
+      mergeField(key)
+    }
+  }
+
+  for (const key in defaultConfig) {
+    if (!customConfig.hasOwnProperty(key)) {
+      mergeField(key)
     }
   }
 

@@ -8,6 +8,7 @@ import {
 } from './../types'
 import dispatchRequest from './dispatchRequest'
 import InterceptorManager from './interceptorManager'
+import mergeConfig from './mergeConfig'
 
 export interface Interceptors {
   request: InterceptorManager<AxiosRequestConfig>
@@ -44,6 +45,8 @@ export default class Axios {
       config = url
     }
 
+    config = mergeConfig(this.defaults, config)
+
     const chain: PromiseChain[] = [
       {
         // 使用拦截器之后所有config都会经过拦截器的处理,而不是像之前那样直接return dispatch(config)
@@ -62,28 +65,29 @@ export default class Axios {
     })
 
     const promise = Promise.resolve(config)
-
     return chain.reduce((result, interceptor) => {
       return result.then(interceptor.resolved, interceptor.rejected)
     }, promise)
   }
 
   get(url: string, config?: AxiosRequestConfig) {
-    this._requestMethodWithoutData('get', url, config)
+    return this._requestMethodWithoutData('get', url, config)
   }
+
   delete(url: string, config?: AxiosRequestConfig) {
-    this._requestMethodWithoutData('delete', url, config)
+    return this._requestMethodWithoutData('delete', url, config)
   }
 
   head(url: string, config?: AxiosRequestConfig) {
-    this._requestMethodWithoutData('head', url, config)
+    return this._requestMethodWithoutData('head', url, config)
   }
 
   options(url: string, config?: AxiosRequestConfig) {
-    this._requestMethodWithoutData('options', url, config)
+    return this._requestMethodWithoutData('options', url, config)
   }
 
   post(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
+    console.log('post', data)
     return this._requestMethodWithData('post', url, data, config)
   }
 
@@ -98,6 +102,7 @@ export default class Axios {
   _requestMethodWithoutData(method: Method, url: string, config?: AxiosRequestConfig) {
     return this.request(Object.assign(config || {}, { method, url }))
   }
+
   _requestMethodWithData(method: Method, url: string, data?: any, config?: AxiosRequestConfig) {
     return this.request(Object.assign(config || {}, { method, url, data }))
   }
